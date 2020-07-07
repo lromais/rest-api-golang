@@ -1,50 +1,44 @@
-package demoapi_test
+package demoapi
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"os"
 )
 
-func TestGetHello(t *testing.T) {
-	ts := httptest.NewServer(http.Hello(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Ola, Maria")
-	}))
-	defer ts.Close()
+var a App
 
-	res, err := http.Get(ts.URL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	greeting, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
+func TestMain(m *testing.M) {
+	a = App{}
+	a.Initialize()
 
-	fmt.Printf("%s", greeting)
-	// Output: Hello, Maria
+	code := m.Run()
+
+	os.Exit(code)
+}
+
+func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+	rr := httptest.NewRecorder()
+	a.Router.ServeHTTP(rr, req)
+
+	return rr
+}
+
+func TestGetHello(t *testing.T) {	
+	req, _ := http.NewRequest("GET", "/hello/Leozinho", nil)
+	response := executeRequest(req)
+
+	if body := response.Body.String(); body != "Ola Leozinho" {
+		t.Errorf("Expected Ola Leozinho, got %s", body)
+	}
 }
 
 func TestGetSum(t *testing.T) {
-	ts := httptest.NewServer(http.SUM(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "1+2")
-	}))
-	defer ts.Close()
+	req, _ := http.NewRequest("GET", "/sum/1/2", nil)
+	response := executeRequest(req)
 
-	res, err := http.Get(ts.URL)
-	if err != nil {
-		log.Fatal(err)
+	if body := response.Body.String(); body != "3" {
+		t.Errorf("Expected 3, got %s", body)
 	}
-	greeting, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("%s", greeting)
-	// Output: 3
 }

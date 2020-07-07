@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetHello(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.Hello(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Ola, Maria")
 	}))
 	defer ts.Close()
@@ -30,7 +30,7 @@ func TestGetHello(t *testing.T) {
 }
 
 func TestGetSum(t *testing.T) {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewServer(http.SUM(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "1+2")
 	}))
 	defer ts.Close()

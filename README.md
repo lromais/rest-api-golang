@@ -1,5 +1,5 @@
 # rest-api-golang
-Estudo de golang rest api
+Estudo de golang, esse codigo é um exemplo para testar as funcionalidades de Rest API 
 
 # Como executar
 
